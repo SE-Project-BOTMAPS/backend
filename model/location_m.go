@@ -1,10 +1,7 @@
 package model
 
-import "gorm.io/gorm"
-
 type Location struct {
-	gorm.Model
-	DataLocation string `json:"data_location" orm:"size(128)"`
+	DataLocation string `json:"data_location" orm:"size(128)" gorm:"primary_key"`
 	RoomCode     string `json:"room_code" orm:"size(128)"`
 	Detail       string `json:"detail" orm:"size(128)"`
 	course       []Course
