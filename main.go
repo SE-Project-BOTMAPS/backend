@@ -27,9 +27,14 @@ func main() {
 }
 
 func loadEnv() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file")
+	if os.Getenv("ENV") == "prod" {
+		log.Println("Running in production mode, using container environment variables")
+	} else {
+		log.Println("Loading .env file for local development")
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+		}
 	}
 }
 
