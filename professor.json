@@ -10,7 +10,11 @@
     },
     {
       "who": "sasin,kanok",
-      "fullName": "Sasin Janpuangtong, Kanok Konglar"
+      "fullName": "Sasin Janpuangtong"
+    },
+    {
+      "who": "sasin,kanok",
+      "fullName": "Kanok Konglar"
     },
     {
       "who": "karn",
@@ -18,7 +22,11 @@
     },
     {
       "who": "kasemsit,karn",
-      "fullName": "Kasemsit Teeyapan, Karn Patanukhom"
+      "fullName": "Kasemsit Teeyapan"
+    },
+    {
+      "who": "kasemsit,karn",
+      "fullName": "Karn Patanukhom"
     },
     {
       "who": "natthanan",
@@ -26,7 +34,11 @@
     },
     {
       "who": "anya/kampol",
-      "fullName": "Anya Apavatjrut, Kampol Woradit"
+      "fullName": "Anya Apavatjrut"
+    },
+    {
+      "who": "anya/kampol",
+      "fullName": "Kampol Woradit"
     },
     {
       "who": "juggapong",
@@ -50,11 +62,19 @@
     },
     {
       "who": "anya,myo",
-      "fullName": "Anya Apavatjrut, Myo Thida"
+      "fullName": "Anya Apavatjrut"
+    },
+    {
+      "who": "anya,myo",
+      "fullName": "Myo Thida"
     },
     {
       "who": "trasapong,navadon",
-      "fullName": "Trasapong Thaiupathump, Navadon Khunlertgit"
+      "fullName": "Trasapong Thaiupathump"
+    },
+    {
+      "who": "trasapong,navadon",
+      "fullName": "Navadon Khunlertgit"
     },
     {
       "who": "ken",
@@ -65,8 +85,20 @@
       "fullName": "Trasapong Thaiupathump"
     },
     {
+      "who": "Lachana",
+      "fullName": "Lachana Ramingwong"
+    },
+    {
       "who": "thanatip,sasin,kanok",
-      "fullName": "Thanatip Chankong, Sasin Janpuangtong, Kanok Konglar"
+      "fullName": "Thanatip Chankong"
+    },
+    {
+      "who": "thanatip,sasin,kanok",
+      "fullName": "Sasin Janpuangtong"
+    },
+    {
+      "who": "thanatip,sasin,kanok",
+      "fullName": "Kanok Konglar"
     },
     {
       "who": "patiwet",
@@ -78,11 +110,19 @@
     },
     {
       "who": "navadon,sasin",
-      "fullName": "Navadon Khunlertgit, Sasin Janpuangtong"
+      "fullName": "Navadon Khunlertgit"
+    },
+    {
+      "who": "navadon,sasin",
+      "fullName": "Sasin Janpuangtong"
     },
     {
       "who": "kampol,anya",
-      "fullName": "Kampol Woradit, Anya Apavatjrut"
+      "fullName": "Kampol Woradit"
+    },
+    {
+      "who": "kampol,anya",
+      "fullName": "Anya Apavatjrut"
     },
     {
       "who": "paskorn",
@@ -90,7 +130,11 @@
     },
     {
       "who": "kanok,sasin",
-      "fullName": "Kanok Konglar, Sasin Janpuangtong"
+      "fullName": "Kanok Konglar"
+    },
+    {
+      "who": "kanok,sasin",
+      "fullName": "Sasin Janpuangtong"
     },
     {
       "who": "navadon",
@@ -102,7 +146,11 @@
     },
     {
       "who": "kasemsit,navadon",
-      "fullName": "Kasemsit Teeyapan, Navadon Khunlertgit"
+      "fullName": "Kasemsit Teeyapan"
+    },
+    {
+      "who": "kasemsit,navadon",
+      "fullName": "Navadon Khunlertgit"
     },
     {
       "who": "dome",
@@ -138,11 +186,19 @@
     },
     {
       "who": "juggapong,nasi",
-      "fullName": "Juggapong Natwichai, Nasi Tantitharanukul"
+      "fullName": "Juggapong Natwichai"
+    },
+    {
+      "who": "juggapong,nasi",
+      "fullName": "Nasi Tantitharanukul"
     },
     {
       "who": "karn,kasemsit",
-      "fullName": "Karn Patanukhom, Kasemsit Teeyapan"
+      "fullName": "Karn Patanukhom"
+    },
+    {
+      "who": "karn,kasemsit",
+      "fullName": "Kasemsit Teeyapan"
     },
     {
       "who": "sansanee",
@@ -150,7 +206,11 @@
     },
     {
       "who": "myo,paskorn",
-      "fullName": "Myo Thida, Paskorn Champrasert"
+      "fullName": "Myo Thida"
+    },
+    {
+      "who": "myo,paskorn",
+      "fullName": "Paskorn Champrasert"
     },
     {
       "who": "anya",
@@ -161,8 +221,16 @@
       "fullName": "Nasi Tantitharanukul"
     },
     {
+      "who": "Ken",
+      "fullName": "Kenneth Cosh"
+    },
+    {
       "who": "sansanee,kasemsit",
-      "fullName": "Sansanee Auephanwiriyakul, Kasemsit Teeyapan"
+      "fullName": "Sansanee Auephanwiriyakul"
+    },
+    {
+      "who": "sansanee,kasemsit",
+      "fullName": "Kasemsit Teeyapan"
     },
     {
       "who": "kasemsit",

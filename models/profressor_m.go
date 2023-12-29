@@ -1,7 +1,8 @@
 package models
 
 type Professor struct {
-	DataWho  string `json:"data_who" orm:"size(128)" gorm:"primary_key"`
+	ID       int64  `json:"id" orm:"auto" gorm:"primary_key"`
+	DataWho  string `json:"data_who" orm:"size(128)"`
 	FullName string `json:"full_name" orm:"size(128)"`
 	course   []Course
 }
