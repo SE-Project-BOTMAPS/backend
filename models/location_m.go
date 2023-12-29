@@ -1,4 +1,4 @@
-package model
+package models
 
 type Location struct {
 	DataLocation string `json:"data_location" orm:"size(128)" gorm:"primary_key"`

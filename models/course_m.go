@@ -1,4 +1,4 @@
-package model
+package models
 
 type Course struct {
 	ID          int64     `json:"id" orm:"auto" gorm:"primary_key"`

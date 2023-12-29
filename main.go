@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/SE-Project-BOTMAPS/backend/model"
+	"github.com/SE-Project-BOTMAPS/backend/models"
 	"github.com/SE-Project-BOTMAPS/backend/routers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -51,9 +51,9 @@ func connectDB() *gorm.DB {
 }
 
 func migration(db *gorm.DB) {
-	errCourse := db.AutoMigrate(&model.Course{})
-	errLocation := db.AutoMigrate(&model.Location{})
-	errProfessor := db.AutoMigrate(&model.Professor{})
+	errCourse := db.AutoMigrate(&models.Course{})
+	errLocation := db.AutoMigrate(&models.Location{})
+	errProfessor := db.AutoMigrate(&models.Professor{})
 	if errCourse != nil || errLocation != nil || errProfessor != nil {
 		log.Fatalf("Error migrating database: %s", errCourse.Error())
 	}

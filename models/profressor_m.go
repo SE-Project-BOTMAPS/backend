@@ -1,4 +1,4 @@
-package model
+package models
 
 type Professor struct {
 	DataWho  string `json:"data_who" orm:"size(128)" gorm:"primary_key"`
