@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/SE-Project-BOTMAPS/backend/models"
 	"github.com/SE-Project-BOTMAPS/backend/routers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -18,6 +19,7 @@ func main() {
 	migration(db)
 
 	router := gin.New()
+	router.Use(cors.Default())
 	api := router.Group("/api")
 	routers.MainRouter(api, db)
 	err := router.Run(":8080")
