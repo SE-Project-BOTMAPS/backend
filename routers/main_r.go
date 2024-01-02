@@ -16,4 +16,6 @@ func MainRouter(router *gin.RouterGroup, db *gorm.DB) {
 	})
 	router.POST("/Professor", ctrl.InsertProfessor)
 	router.POST("/Location", ctrl.InsertLocation)
+	router.POST("/Course", ctrl.InsertCourse)
+	router.POST("/data", ctrl.UpdateData)
 }
