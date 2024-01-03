@@ -16,7 +16,7 @@ import (
 func main() {
 	loadEnv()
 	db := connectDB()
-	migration(db)
+	Migration(db)
 
 	router := gin.New()
 	router.Use(cors.Default())
@@ -57,7 +57,7 @@ func connectDB() *gorm.DB {
 	return db
 }
 
-func migration(db *gorm.DB) {
+func Migration(db *gorm.DB) {
 	errCourse := db.AutoMigrate(&models.Course{})
 	errLocation := db.AutoMigrate(&models.Location{})
 	errProfessor := db.AutoMigrate(&models.Professor{})

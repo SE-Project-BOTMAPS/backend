@@ -6,15 +6,32 @@ import (
 )
 
 func InsertCourse(data Events, db *gorm.DB) {
-	for _, Event := range data.Event {
-		//	insert location to get foreign key to use in course
-		location := models.Location{DataLocation: Event.Location}
-		db.Create(&location)
-		//	insert professor to get foreign key to use in course
+	tx := db.Begin()
+	//Empty database
+	tx.Exec("DELETE FROM courses")
+	tx.Exec("DELETE FROM locations")
+	tx.Exec("DELETE FROM professors")
+	//reset auto increment
+	tx.Exec("ALTER TABLE courses AUTO_INCREMENT = 1")
+	tx.Exec("ALTER TABLE locations AUTO_INCREMENT = 1")
+	tx.Exec("ALTER TABLE professors AUTO_INCREMENT = 1")
+
+	courses := make([]models.Course, len(data.Event))
+
+	for i, Event := range data.Event {
+		location := models.Location{Location: Event.Location}
 		professor := models.Professor{DataWho: Event.Who}
-		db.Create(&professor)
-		//	insert course
-		course := models.Course{Title: Event.Title, StartTime: Event.StartDt, EndTime: Event.EndDt, LocationID: location.ID, ProfessorID: professor.ID}
-		db.Create(&course)
+		tx.FirstOrCreate(&location, models.Location{Location: Event.Location})
+		tx.FirstOrCreate(&professor, models.Professor{DataWho: Event.Who})
+
+		courses[i] = models.Course{
+			Title:       Event.Title,
+			StartTime:   Event.StartDt,
+			EndTime:     Event.EndDt,
+			LocationID:  location.ID,
+			ProfessorID: professor.ID,
+		}
 	}
+	tx.Create(&courses)
+	tx.Commit()
 }
