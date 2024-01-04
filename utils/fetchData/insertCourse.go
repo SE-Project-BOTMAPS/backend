@@ -72,20 +72,8 @@ var dayReplacer = strings.NewReplacer(
 	"SU", "Sunday",
 )
 
-
 func getFullName(days string) string {
-	// replacer := strings.NewReplacer(
-	// 	"MO", "Monday",
-	// 	"TU", "Tuesday",
-	// 	"WE", "Wednesday",
-	// 	"TH", "Thursday",
-	// 	"FR", "Friday",
-	// 	"SA", "Saturday",
-	// 	"SU", "Sunday",
-	// )
-
 	days = strings.ToUpper(days) 
-
 	days = dayReplacer.Replace(days)
 
 	return days
