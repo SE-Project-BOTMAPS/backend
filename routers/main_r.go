@@ -15,4 +15,5 @@ func MainRouter(router *gin.RouterGroup, db *gorm.DB) {
 		})
 	})
 	router.POST("/data", ctrl.UpdateData)
+	router.GET("/daily/:floor", ctrl.DailyData)
 }
