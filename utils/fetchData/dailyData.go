@@ -46,22 +46,20 @@ func splitLocation(eventLocation string) []string {
 	return []string{eventLocation}
 }
 
-func DailyData(floor int) (map[int]Event, error) {
+func DailyData(floor int) ([]Event, error) {
 	events, err := FetchData("", "")
 	if err != nil {
 		log.Fatal("Error reading response. ", err)
 	}
 
-	result := make(map[int]Event)
-	i := 0
+	var result []Event
 
 	for _, event := range events.Event {
 		if locationMatchesFloor(event.Location, floor) {
 			roomCodes := splitLocation(event.Location)
 
 			for _, roomCode := range roomCodes {
-				result[i] = convertToDailyEvent(event, roomCode)
-				i++
+				result = append(result, convertToDailyEvent(event, roomCode))
 			}
 		}
 	}
