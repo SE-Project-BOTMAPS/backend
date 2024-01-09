@@ -52,7 +52,7 @@ func DailyData(floor int) ([]Event, error) {
 		log.Fatal("Error reading response. ", err)
 	}
 
-	var result []Event
+	result := []Event{}
 
 	for _, event := range events.Event {
 		if locationMatchesFloor(event.Location, floor) {
