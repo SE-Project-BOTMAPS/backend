@@ -25,7 +25,7 @@ func (db *DbController) DailyData(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"data": data})
+	c.JSON(200, gin.H{"events": data})
 	// Insert the data into the database
 	// fetchData.InsertCourse(data, db.Database)
 }
