@@ -2,6 +2,7 @@ package fetchData
 
 import (
 	"fmt"
+	"github.com/SE-Project-BOTMAPS/backend/models"
 	"gorm.io/gorm"
 	"log"
 	"strconv"
@@ -57,29 +58,39 @@ func splitLocation(eventLocation string) []string {
 	return data
 }
 
-func DailyData(floor int, db *gorm.DB) ([]Event, error) {
+func DailyData(floor int, db *gorm.DB) ([][]Event, error) {
 	events, err := FetchData("", "")
 	if err != nil {
 		log.Fatal("Error reading response. ", err)
 	}
 
-	//tx := db.Begin()
+	config := models.Config{Name: "Room reservations", Active: true}
 
-	//study := []Event{}
-	//reserve := []Event{}
-	result := []Event{}
+	var resultDB models.Config
+	if err := db.Where(&config).First(&resultDB).Error; err != nil {
+		log.Fatal("Error querying database:", err)
+	}
+
+	subID := resultDB.SubID
+
+	study := []Event{}
+	reserve := []Event{}
 
 	for _, event := range events.Event {
 		if locationMatchesFloor(event.Location, floor) {
 			roomCodes := splitLocation(event.Location)
 
 			for _, roomCode := range roomCodes {
-				result = append(result, convertToDailyEvent(event, roomCode))
+				if event.SubID == int(subID) {
+					reserve = append(reserve, convertToDailyEvent(event, roomCode))
+				} else {
+					study = append(study, convertToDailyEvent(event, roomCode))
+				}
 			}
 		}
 	}
 
-	return result, nil
+	return [][]Event{study, reserve}, nil
 }
 
 func locationMatchesFloor(location string, floor int) bool {
