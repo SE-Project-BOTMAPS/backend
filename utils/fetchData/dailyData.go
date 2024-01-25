@@ -38,12 +38,21 @@ func convertToDailyEvent(event Event, roomCode string) Event {
 }
 
 func splitLocation(eventLocation string) []string {
-	if strings.Contains(eventLocation, "/") {
-		return strings.Split(eventLocation, "/")
-	} else if strings.Contains(eventLocation, "-") {
-		return strings.Split(eventLocation, "-")
+	if len(eventLocation) < 3 {
+		return []string{eventLocation}
 	}
-	return []string{eventLocation}
+
+	data := strings.FieldsFunc(eventLocation, func(r rune) bool {
+		return r == '/' || r == '-'
+	})
+
+	for _, location := range data {
+		if len(location) < 3 {
+			return []string{eventLocation}
+		}
+	}
+
+	return data
 }
 
 func DailyData(floor int) ([]Event, error) {
