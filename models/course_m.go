@@ -8,8 +8,8 @@ type Course struct {
 	Day         string    `json:"day" orm:"size(64)"`
 	StartTime   string    `json:"start_time" orm:"size(64)"`
 	EndTime     string    `json:"end_time" orm:"size(64)"`
-	LocationID  int64     `json:"location_id"`
+	LocationID  int64     `json:"location_id" gorm:"index"`
 	Location    Location  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-	ProfessorID int64     `json:"professor_id"`
+	ProfessorID int64     `json:"professor_id" gorm:"index"`
 	Professor   Professor `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 }
