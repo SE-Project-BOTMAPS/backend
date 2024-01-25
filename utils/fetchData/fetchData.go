@@ -43,6 +43,7 @@ type Events struct {
 
 type Event struct {
 	Id       string `json:"id"`
+	SubID    int    `json:"subcalendar_id"`
 	Rrule    string `json:"rrule"`
 	Title    string `json:"title"`
 	Who      string `json:"who"`
