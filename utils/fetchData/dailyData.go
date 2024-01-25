@@ -2,6 +2,7 @@ package fetchData
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"log"
 	"strconv"
 	"strings"
@@ -27,6 +28,7 @@ func convertToDailyEvent(event Event, roomCode string) Event {
 
 	return Event{
 		Id:       event.Id,
+		SubID:    event.SubID,
 		Rrule:    DatePortion,
 		Title:    event.Title,
 		Who:      event.Who,
@@ -55,12 +57,16 @@ func splitLocation(eventLocation string) []string {
 	return data
 }
 
-func DailyData(floor int) ([]Event, error) {
+func DailyData(floor int, db *gorm.DB) ([]Event, error) {
 	events, err := FetchData("", "")
 	if err != nil {
 		log.Fatal("Error reading response. ", err)
 	}
 
+	//tx := db.Begin()
+
+	//study := []Event{}
+	//reserve := []Event{}
 	result := []Event{}
 
 	for _, event := range events.Event {
