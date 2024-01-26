@@ -53,7 +53,8 @@ type Event struct {
 }
 
 func FetchData(sDate, eDate string) (Events, error) {
-	url := fmt.Sprintf("https://api.teamup.com/ksg7y4nwkfp7q6xyio/events?startDate=%s&endDate=%s", sDate, eDate)
+	baseUrl := os.Getenv("BASE_URL") + "events?startDate=%s&endDate=%s"
+	url := fmt.Sprintf(baseUrl, sDate, eDate)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal("Error creating request. ", err)
