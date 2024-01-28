@@ -14,6 +14,7 @@ type Events struct {
 
 type Event struct {
 	Id       string `json:"id"`
+	SubID    int    `json:"subcalendar_id"`
 	Rrule    string `json:"rrule"`
 	Title    string `json:"title"`
 	Who      string `json:"who"`
@@ -71,9 +72,4 @@ func FetchImprove(url string, model interface{}) {
 	if err != nil {
 		log.Fatal("Error unmarshalling. ", err)
 	}
-}
-
-func FetchData(url string, token string) (Events, error) {
-	var events Events
-	return events, nil
 }
