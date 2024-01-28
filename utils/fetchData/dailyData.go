@@ -5,6 +5,7 @@ import (
 	"github.com/SE-Project-BOTMAPS/backend/models"
 	"gorm.io/gorm"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -59,12 +60,12 @@ func splitLocation(eventLocation string) []string {
 }
 
 func DailyData(floor int, db *gorm.DB) ([][]Event, error) {
-	events, err := FetchData("", "")
-	if err != nil {
-		log.Fatal("Error reading response. ", err)
-	}
+	var events Events
+	baseUrl := os.Getenv("BASE_URL") + "events?startDate=2024-01-22&endDate=2024-01-22"
+	FetchImprove(baseUrl, &events)
 
-	config := models.Config{Name: "Room reservations", Active: true}
+	keyword := os.Getenv("RESERVATEKEYWORD")
+	config := models.Config{Name: keyword, Active: true}
 
 	var resultDB models.Config
 	if err := db.Where(&config).First(&resultDB).Error; err != nil {
