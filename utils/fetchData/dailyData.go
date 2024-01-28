@@ -61,7 +61,7 @@ func splitLocation(eventLocation string) []string {
 
 func DailyData(floor int, db *gorm.DB) ([][]Event, error) {
 	var events Events
-	baseUrl := os.Getenv("BASE_URL") + "events?startDate=2024-01-22&endDate=2024-01-22"
+	baseUrl := os.Getenv("BASE_URL") + "events"
 	FetchImprove(baseUrl, &events)
 
 	keyword := os.Getenv("RESERVATEKEYWORD")

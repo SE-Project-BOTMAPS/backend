@@ -73,8 +73,3 @@ func FetchImprove(url string, model interface{}) {
 		log.Fatal("Error unmarshalling. ", err)
 	}
 }
-
-func FetchData(url string, token string) (Events, error) {
-	var events Events
-	return events, nil
-}
