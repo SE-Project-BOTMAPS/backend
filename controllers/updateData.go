@@ -3,15 +3,15 @@ package controllers
 import (
 	"github.com/SE-Project-BOTMAPS/backend/utils/fetchData"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
 func (db *DbController) UpdateData(c *gin.Context) {
-	data, err := fetchData.FetchData("2024-01-22", "2024-01-28")
-	if err != nil {
-		c.JSON(500, gin.H{
-			"message": "Error fetching data.",
-		})
-		return
-	}
-	fetchData.InsertCourse(data, db.Database)
+	var events fetchData.Events
+	baseUrl := os.Getenv("BASE_URL") + "events?startDate=2024-01-22&endDate=2024-01-28"
+	fetchData.FetchImprove(baseUrl, &events)
+	fetchData.InsertCourse(events, db.Database)
+	c.JSON(200, gin.H{
+		"message": "Data updated",
+	})
 }
