@@ -13,7 +13,7 @@ func (db *DbController) RoomCode(c *gin.Context) {
 	room_code := c.Param("room_code")
 
 	// Call the RoomCode function with the room_code parameter
-	data, err := fetchData.RoomCode(room_code, db.Database)
+	dayCourseMap, officeOf, err := fetchData.RoomCode(room_code, db.Database)
 	
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(400, gin.H{
@@ -29,5 +29,5 @@ func (db *DbController) RoomCode(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"events": data})
+	c.JSON(200, gin.H{"events": dayCourseMap, "officeOf": officeOf})
 }
