@@ -3,16 +3,20 @@ package fetchData
 import (
 	"fmt"
 	"log"
+	"sort"
+	"time"
 
 	"github.com/SE-Project-BOTMAPS/backend/models"
 	"gorm.io/gorm"
 )
 
-func RoomCode(room_code string, db *gorm.DB) ([]models.Course, error) {
+type DayCourseMap map[string][]models.Course
+
+func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, error) {
 	
 	var locations []models.Location
 	var courses []models.Course
-	emptyCourse := []models.Course{}
+	emptymap := DayCourseMap{}
 
 	regexp := "%" + room_code + "%"
 
@@ -20,10 +24,10 @@ func RoomCode(room_code string, db *gorm.DB) ([]models.Course, error) {
 	err1 := db.Where("Location LIKE ?", regexp).Find(&locations).Error
 	if len(locations) == 0 {
 		message := "No such room found: " + room_code
-		return emptyCourse, fmt.Errorf("%w: %s", gorm.ErrRecordNotFound, message)
+		return emptymap, fmt.Errorf("%w: %s", gorm.ErrRecordNotFound, message)
 	}
 	if err1 != nil {
-		return emptyCourse, err1
+		return emptymap, err1
 	}
 
 	// Retrieve location IDs
@@ -33,11 +37,61 @@ func RoomCode(room_code string, db *gorm.DB) ([]models.Course, error) {
 	}
 	
 	// Query all courses with the location ID
-	err2 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&courses).Order("start_time").Error
+	err2 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&courses).Error
 	if err2 != nil {
 		log.Println(err2)
-		return emptyCourse, err2
+		return emptymap, err2
 	}
 
-	return courses, nil
+	// categorizing
+	dayCourseMap := DayCourseMap{
+		"mon": []models.Course{},
+		"tue": []models.Course{},
+		"wed": []models.Course{},
+		"thu": []models.Course{},
+		"fri": []models.Course{},
+		"sat": []models.Course{},
+		"sun": []models.Course{},
+		"na": []models.Course{},
+	}
+
+	daysMapping := map[string]string{
+		"Monday":    "mon",
+		"Tuesday":   "tue",
+		"Wednesday": "wed",
+		"Thursday":  "thu",
+		"Friday":    "fri",
+		"Saturday":  "sat",
+		"Sunday":    "sun",
+	}
+	
+	for _, course := range courses {
+		startTime, err := time.Parse("2006-01-02T15:04:05-07:00", course.StartTime)
+		if err != nil {
+			dayCourseMap["na"] = append(dayCourseMap["na"], course)
+			continue 
+		}
+
+		key := daysMapping[startTime.Weekday().String()]
+		dayCourseMap[key] = append(dayCourseMap[key], course)
+	}
+
+	// sorting by start time
+	sortCoursesByStartTime := func(courses []models.Course) {
+		sort.Slice(courses, func(i, j int) bool {
+            timeI, _ := time.Parse("2006-01-02T15:04:05-07:00", courses[i].StartTime)
+            timeJ, _ := time.Parse("2006-01-02T15:04:05-07:00", courses[j].StartTime)
+            return timeI.Format("15:04:05") < timeJ.Format("15:04:05")
+		})
+	}
+
+	for key, day := range dayCourseMap {
+		if key == "na" {
+			continue
+		}
+
+		sortCoursesByStartTime(day)
+	}
+
+	return dayCourseMap, nil
 }
