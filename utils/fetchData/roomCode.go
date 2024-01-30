@@ -41,7 +41,7 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Office, err
 
 	// Query the owner of the office
 	var offices []models.Office
-	err2 := db.Preload("Location").Where("location_id IN ?", locationIds).Find(&offices).Error
+	err2 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&offices).Error
 	if err2 != nil {
 		offices = emptyoffices
 	}
