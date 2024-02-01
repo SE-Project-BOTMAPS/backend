@@ -11,24 +11,23 @@ import (
 
 type DayCourseMap map[string][]models.Course
 
-func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Office, error) {
+func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Professor, error) {
 	
 	var locations []models.Location
 	var courses []models.Course
 	emptymap := DayCourseMap{}
-	emptyoffices := []models.Office{}
+	emptyProfessors := []models.Professor{}
 
 	regexp := "%" + room_code + "%"
-
 
 	// Query all locations with the room code
 	err1 := db.Where("Location LIKE ?", regexp).Find(&locations).Error
 	if len(locations) == 0 {
 		message := "No such room found: " + room_code
-		return emptymap, emptyoffices, fmt.Errorf("%w: %s", gorm.ErrRecordNotFound, message)
+		return emptymap, emptyProfessors, fmt.Errorf("%w: %s", gorm.ErrRecordNotFound, message)
 	}
 	if err1 != nil {
-		return emptymap, emptyoffices, err1
+		return emptymap, emptyProfessors, err1
 	}
 
 	// Retrieve location IDs
@@ -40,16 +39,16 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Office, err
 	// Note: After this line, the searching location must exist.
 
 	// Query the owner of the office
-	var offices []models.Office
-	err2 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&offices).Error
+	var officesOf []models.Professor
+	err2 := db.Where("office_location_id IN ?", locationIds).Find(&officesOf).Error
 	if err2 != nil {
-		offices = emptyoffices
+		officesOf = emptyProfessors
 	}
 	
 	// Query all courses with the location ID
 	err3 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&courses).Error
 	if err3 != nil {
-		return emptymap, offices, nil
+		return emptymap, officesOf, nil
 	}
 
 	// categorizing
@@ -106,5 +105,5 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Office, err
 		sortCoursesByStartTime(day)
 	}
 
-	return dayCourseMap, offices, nil
+	return dayCourseMap, officesOf, nil
 }

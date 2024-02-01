@@ -13,11 +13,7 @@ func InsertOffice(db *gorm.DB) error {
 	url := "https://www.cpe.eng.cmu.ac.th/lecturer-thai.php"
 	c := colly.NewCollector()
 
-	var offices []models.Office
-
 	tx := db.Begin()
-	tx.Exec("DELETE FROM offices")
-	tx.Exec("ALTER TABLE offices AUTO_INCREMENT = 1")
 
 	c.OnHTML("div.panel-boxtitle2", func(e *colly.HTMLElement) {
 		firstname := strings.ToLower(strings.Fields(e.DOM.Find("font:nth-child(1)").Text())[0])
@@ -25,10 +21,8 @@ func InsertOffice(db *gorm.DB) error {
 
 		var location models.Location
 		var professor models.Professor
-		tx.FirstOrCreate(&professor, models.Professor{DataWho: firstname})
 		tx.FirstOrCreate(&location, models.Location{Location: office})
-
-		offices = append(offices, models.Office{LocationID: location.ID, ProfessorID: professor.ID})
+		tx.Where(models.Professor{DataWho: firstname}).Assign(models.Professor{OfficeLocationID:location.ID}).FirstOrCreate(&professor, models.Professor{DataWho: firstname})
 	})
 
 	// Start the scraping process
@@ -37,7 +31,6 @@ func InsertOffice(db *gorm.DB) error {
 		return err
 	}
 
-	tx.Create(&offices)
 	tx.Commit()
 
 	return nil
