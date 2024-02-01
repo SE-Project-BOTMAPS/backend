@@ -11,12 +11,18 @@ import (
 
 type DayCourseMap map[string][]models.Course
 
-func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Professor, error) {
+type Officier struct {
+	DataWho          string   `json:"data_who" orm:"size(128)"`
+	FullName         string   `json:"full_name" orm:"size(128)"`
+}
+
+func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
 	
 	var locations []models.Location
 	var courses []models.Course
 	emptymap := DayCourseMap{}
 	emptyProfessors := []models.Professor{}
+	emptyofficiers := []Officier{}
 
 	regexp := "%" + room_code + "%"
 
@@ -24,10 +30,10 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Professor, 
 	err1 := db.Where("Location LIKE ?", regexp).Find(&locations).Error
 	if len(locations) == 0 {
 		message := "No such room found: " + room_code
-		return emptymap, emptyProfessors, fmt.Errorf("%w: %s", gorm.ErrRecordNotFound, message)
+		return emptymap, emptyofficiers, fmt.Errorf("%w: %s", gorm.ErrRecordNotFound, message)
 	}
 	if err1 != nil {
-		return emptymap, emptyProfessors, err1
+		return emptymap, emptyofficiers, err1
 	}
 
 	// Retrieve location IDs
@@ -44,11 +50,16 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Professor, 
 	if err2 != nil {
 		officesOf = emptyProfessors
 	}
+
+	officiers := make([]Officier, len(officesOf))
+	for i, prof := range officesOf {
+		officiers[i] = Officier{DataWho: prof.DataWho, FullName: prof.FullName}
+	}
 	
 	// Query all courses with the location ID
 	err3 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&courses).Error
 	if err3 != nil {
-		return emptymap, officesOf, nil
+		return emptymap, officiers, nil
 	}
 
 	// categorizing
@@ -105,5 +116,5 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []models.Professor, 
 		sortCoursesByStartTime(day)
 	}
 
-	return dayCourseMap, officesOf, nil
+	return dayCourseMap, officiers, nil
 }

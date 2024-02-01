@@ -22,6 +22,8 @@ func InsertCourse(data Events, db *gorm.DB) {
 
 	courses := make([]models.Course, len(data.Event))
 
+	dummyLocation := models.Location{Location: "DUMMYLOCx8zh2EjK1nqI9o3mXsLbNpVw"}
+	tx.Create(&dummyLocation)
 	for i, Event := range data.Event {
 		location := models.Location{Location: Event.Location}
 		professor := models.Professor{DataWho: Event.Who}
