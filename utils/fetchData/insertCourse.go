@@ -28,7 +28,7 @@ func InsertCourse(data Events, db *gorm.DB) {
 		location := models.Location{Location: Event.Location}
 		professor := models.Professor{DataWho: Event.Who}
 		tx.FirstOrCreate(&location, models.Location{Location: Event.Location})
-		tx.FirstOrCreate(&professor, models.Professor{DataWho: Event.Who, OfficeLocationID: 1})
+		tx.FirstOrCreate(&professor, models.Professor{DataWho: Event.Who, OfficeLocationID: dummyLocation.ID})
 
 		courses[i] = models.Course{
 			Title:       Event.Title,

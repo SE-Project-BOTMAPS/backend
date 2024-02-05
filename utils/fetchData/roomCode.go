@@ -3,6 +3,7 @@ package fetchData
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/SE-Project-BOTMAPS/backend/models"
@@ -18,12 +19,14 @@ type Officier struct {
 
 func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
 	
+	
 	var locations []models.Location
 	var courses []models.Course
 	emptymap := DayCourseMap{}
 	emptyProfessors := []models.Professor{}
 	emptyofficiers := []Officier{}
-
+	
+	room_code = strings.TrimSpace(room_code)
 	regexp := "%" + room_code + "%"
 
 	// Query all locations with the room code
@@ -46,7 +49,7 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
 
 	// Query the owner of the office
 	var officesOf []models.Professor
-	err2 := db.Where("office_location_id IN ?", locationIds).Find(&officesOf).Error
+	err2 := db.Where("office_location_id = ?", room_code).Find(&officesOf).Error
 	if err2 != nil {
 		officesOf = emptyProfessors
 	}
