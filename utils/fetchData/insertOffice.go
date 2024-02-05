@@ -16,13 +16,14 @@ func InsertOffice(db *gorm.DB) error {
 	tx := db.Begin()
 
 	c.OnHTML("div.panel-boxtitle2", func(e *colly.HTMLElement) {
-		firstname := strings.ToLower(strings.Fields(e.DOM.Find("font:nth-child(1)").Text())[0])
+		fullname := e.DOM.Find("font:nth-child(1)").Text()
+		firstname := strings.ToLower(strings.Fields(fullname)[0])
 		office := e.DOM.Find("font:nth-child(8)").Text()
 
 		var location models.Location
 		var professor models.Professor
 		tx.FirstOrCreate(&location, models.Location{Location: office})
-		tx.Where(models.Professor{DataWho: firstname}).Assign(models.Professor{OfficeLocationID:location.ID}).FirstOrCreate(&professor, models.Professor{DataWho: firstname})
+		tx.Where(models.Professor{DataWho: firstname}).Assign(models.Professor{FullName: fullname, OfficeLocationID:location.ID}).FirstOrCreate(&professor, models.Professor{DataWho: firstname})
 	})
 
 	// Start the scraping process
