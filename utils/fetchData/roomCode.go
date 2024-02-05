@@ -49,8 +49,15 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
 
 	// Query the owner of the office
 	var officesOf []models.Professor
-	err2 := db.Where("office_location_id = ?", room_code).Find(&officesOf).Error
-	if err2 != nil {
+	var exactLocation models.Location
+
+	err2 := db.Where("Location = ?", room_code).First(&exactLocation).Error
+	if(err2 != nil) {
+		officesOf = emptyProfessors
+	} 
+
+	err3 := db.Where("office_location_id = ?", exactLocation.ID).Find(&officesOf).Error
+	if err3 != nil {
 		officesOf = emptyProfessors
 	}
 
@@ -60,8 +67,8 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
 	}
 	
 	// Query all courses with the location ID
-	err3 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&courses).Error
-	if err3 != nil {
+	err4 := db.Preload("Location").Preload("Professor").Where("location_id IN ?", locationIds).Find(&courses).Error
+	if err4 != nil {
 		return emptymap, officiers, nil
 	}
 
