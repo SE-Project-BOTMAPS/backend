@@ -1,10 +1,11 @@
-package SearchData
+package searchData
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
-	"os"
+	"strings"
+
+	"github.com/SE-Project-BOTMAPS/backend/models"
+	"gorm.io/gorm"
 )
 
 type SearchData struct {
@@ -14,45 +15,42 @@ type SearchData struct {
 	Day string `json:"day"`
 }
 
-func Search(keyword string) ([]SearchData, error){
+func Search(keyword string, db *gorm.DB) ([]models.Course, error){
 
-	// log.Printf("Hello, %s", keyword)
-	username := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	dbname := os.Getenv("DB_NAME")
-
-	//Create data source name 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, host, port, dbname)
-
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatal("Error opening database: ", err)
-	}
-	defer db.Close()
-
-	rows, err := db.Query("(SELECT c.title ,l.location ,p.data_who, c.`day`  FROM courses c JOIN locations l ON c.location_id = l.id JOIN professors p ON p.id = c.id)")
+	var professorIds []int64
+	var roomIds []int64
+	var courses []models.Course
 	
+	regexp := "%" + strings.ToLower(keyword) + "%"
+	err1 := db.Table("professors").Where("LOWER(data_who) LIKE ? OR LOWER(full_name) LIKE ?", regexp, regexp).Select("professors.ID").Find(&professorIds).Error
+	if(err1 != nil) {
+		return nil,err1
+	}
+	log.Println(professorIds)
 
-	if err != nil {
-        log.Fatal("Error querying database:", err)
-    }
-    defer rows.Close()
-
-	SearchResults := []SearchData{}
-	for rows.Next() {
-		var s SearchData
-		if err := rows.Scan(&s.Title, &s.Locations, &s.Professor, &s.Day); err != nil {
-			log.Fatal("Error scanning rows:", err)
-		}
-		SearchResults = append(SearchResults, s)
+	err2 := db.Table("locations").Where("LOWER(Location) LIKE ?", regexp).Select("locations.ID").Find(&roomIds).Error
+	if(err2 != nil) {
+		return nil,err2
 	}
 
-	if err := rows.Err(); err != nil {
-		log.Fatal("Error iterating over rows:", err)
-	}
-	log.Print(SearchResults)
+	queryParam := "title LIKE ?"
+	var args []interface{}
+	args = append(args, regexp)
 	
-	return SearchResults, nil
+	if len(professorIds) > 0 {
+		queryParam += " OR professor_id IN (?)"
+		args = append(args, professorIds)
+	}
+
+	if len(queryParam) > 0 {
+		queryParam += " OR location_id IN (?)"
+		args = append(args, roomIds)
+	}
+	
+	err3 := db.Preload("Professor").Preload("Location").Where(queryParam, args...).Find(&courses).Error
+	if(err3 != nil) {
+		return nil,err3
+	}
+
+	return courses, nil
 }

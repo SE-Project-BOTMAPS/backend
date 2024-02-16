@@ -1,17 +1,19 @@
 package controllers
 
 import (
-	"github.com/SE-Project-BOTMAPS/backend/utils/SearchData"
+	"github.com/SE-Project-BOTMAPS/backend/utils/searchData"
 	"github.com/gin-gonic/gin"
 )
 
 func (db *DbController) SearchData(c *gin.Context){
 	keyword := c.Param("keyword")
-	search, err := SearchData.Search(keyword)
+	
+	courses, err := searchData.Search(keyword, db.Database)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Error Searching data.",
 		})
+		return
 	}
-	c.JSON(200, search)
+	c.JSON(200, courses)
 }
