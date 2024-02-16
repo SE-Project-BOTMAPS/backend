@@ -1,62 +1,99 @@
 package fetchData
 
 import (
+	"fmt"
+	"github.com/SE-Project-BOTMAPS/backend/models"
+	"gorm.io/gorm"
 	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
-/*
-{
-            "id": "1609900170-rid-1704160800",
-            "series_id": 1609900170,
-            "remote_id": null,
-            "subcalendar_id": 6820246,
-            "subcalendar_ids": [
-                6820246
-            ],
-            "all_day": false,
-            "rrule": "FREQ=WEEKLY;UNTIL=20240308T235959+07:00",
-            "title": "Project Meetings",
-            "who": "dome",
-            "location": "403",
-            "notes": "",
-            "version": "cb2239b1e737",
-            "readonly": false,
-            "tz": "Asia/Bangkok",
-            "attachments": [],
-            "start_dt": "2024-01-02T09:00:00+07:00",
-            "end_dt": "2024-01-02T10:00:00+07:00",
-            "ristart_dt": "2024-01-02T02:00:00+00:00",
-            "rsstart_dt": "2023-12-05T09:00:00+07:00",
-            "creation_dt": "2023-11-29T12:40:25+07:00",
-            "update_dt": null,
-            "delete_dt": null
-        },*/
-
-// type Events struct {
-// 	Event []Event `json:"events"`
-// }
-
-// type Event struct {
-// 	Id       string `json:"id"`
-// 	Rrule    string `json:"rrule"`
-// 	Title    string `json:"title"`
-// 	Who      string `json:"who"`
-// 	Location string `json:"location"`
-// 	Notes    string `json:"notes"`
-// 	StartDt  string `json:"start_dt"`
-// 	EndDt    string `json:"end_dt"`
-// }
-
-func DailyData(floor int) (Events, error){
-	events, err := FetchData("", "") 
+func convertToDailyEvent(event Event, roomCode string) Event {
+	StartTime, err := time.Parse(time.RFC3339, event.StartDt)
 	if err != nil {
-		log.Fatal("Error reading response. ", err)
+		fmt.Println("Error parsing date:", err)
+		return Event{}
 	}
-	for i, event := range events.Event {
-		location := event.Location
-		if int(location[0]) != floor{
-			events.Event = append(events.Event[:i], events.Event[i+1:]...)
+
+	EndTime, err := time.Parse(time.RFC3339, event.EndDt)
+	if err != nil {
+		fmt.Println("Error parsing date:", err)
+		return Event{}
+	}
+
+	DatePortion := StartTime.Format("Monday")
+	timePortionStart := StartTime.Format("15:04")
+	timePortionEnd := EndTime.Format("15:04")
+
+	return Event{
+		Id:       event.Id,
+		SubID:    event.SubID,
+		Rrule:    DatePortion,
+		Title:    event.Title,
+		Who:      event.Who,
+		Location: roomCode,
+		Notes:    event.Notes,
+		StartDt:  timePortionStart,
+		EndDt:    timePortionEnd,
+	}
+}
+
+func splitLocation(eventLocation string) []string {
+	if len(eventLocation) < 3 {
+		return []string{eventLocation}
+	}
+
+	data := strings.FieldsFunc(eventLocation, func(r rune) bool {
+		return r == '/' || r == '-'
+	})
+
+	for _, location := range data {
+		if len(location) < 3 {
+			return []string{eventLocation}
 		}
 	}
-	return events, nil
+
+	return data
+}
+
+func DailyData(floor int, db *gorm.DB) ([][]Event, error) {
+	var events Events
+	baseUrl := os.Getenv("BASE_URL") + "events"
+	FetchImprove(baseUrl, &events)
+
+	keyword := os.Getenv("RESERVATEKEYWORD")
+	config := models.Config{Name: keyword, Active: true}
+
+	var resultDB models.Config
+	if err := db.Where(&config).First(&resultDB).Error; err != nil {
+		log.Fatal("Error querying database:", err)
+	}
+
+	subID := resultDB.SubID
+
+	study := []Event{}
+	reserve := []Event{}
+
+	for _, event := range events.Event {
+		if locationMatchesFloor(event.Location, floor) {
+			roomCodes := splitLocation(event.Location)
+
+			for _, roomCode := range roomCodes {
+				if event.SubID == int(subID) {
+					reserve = append(reserve, convertToDailyEvent(event, roomCode))
+				} else {
+					study = append(study, convertToDailyEvent(event, roomCode))
+				}
+			}
+		}
+	}
+
+	return [][]Event{study, reserve}, nil
+}
+
+func locationMatchesFloor(location string, floor int) bool {
+	return strings.HasPrefix(location, strconv.Itoa(floor))
 }

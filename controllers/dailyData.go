@@ -17,14 +17,16 @@ func (db *DbController) DailyData(c *gin.Context) {
 	}
 
 	// Call the DailyData function with the parsed floor value
-	fetchData.DailyData(floor)
+	data, err := fetchData.DailyData(floor, db.Database)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Error fetching data.",
 		})
 		return
 	}
+	result := gin.H{"study": data[0], "reserve": data[1]}
 
+	c.JSON(200, gin.H{"events": result})
 	// Insert the data into the database
 	// fetchData.InsertCourse(data, db.Database)
 }
