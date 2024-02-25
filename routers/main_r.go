@@ -18,5 +18,6 @@ func MainRouter(router *gin.RouterGroup, db *gorm.DB) {
 	router.POST("/config", ctrl.UpdateConfig)
 	router.GET("/daily/:floor", ctrl.DailyData)
 	router.GET("/room/:room_code", ctrl.RoomCode)
+	router.GET("/isVacant/:room_code", ctrl.IsVacant)
 	router.GET("/search/:keyword", ctrl.SearchData)
 }
