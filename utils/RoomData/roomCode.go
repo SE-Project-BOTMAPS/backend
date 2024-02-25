@@ -15,6 +15,7 @@ type DayCourseMap map[string][]models.Course
 type Officier struct {
 	DataWho          string   `json:"data_who" orm:"size(128)"`
 	FullName         string   `json:"full_name" orm:"size(128)"`
+	NativeName       string   `json:"native_name" orm:"size(128)"`
 }
 
 func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
@@ -63,7 +64,7 @@ func RoomCode(room_code string, db *gorm.DB) (DayCourseMap, []Officier, error) {
 
 	officiers := make([]Officier, len(officesOf))
 	for i, prof := range officesOf {
-		officiers[i] = Officier{DataWho: prof.DataWho, FullName: prof.FullName}
+		officiers[i] = Officier{DataWho: prof.DataWho, FullName: prof.FullName, NativeName: prof.NativeName}
 	}
 	
 	// Query all courses with the location ID

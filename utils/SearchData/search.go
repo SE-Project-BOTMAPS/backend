@@ -10,13 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type SearchData struct {
-	Title string `json:"title"`
-	Locations string `json:"locations"`
-	Professor string `json:"professor"`
-	Day string `json:"day"`
-}
-
 func Search(keyword string, db *gorm.DB) ([]models.Course, error){
 
 	var professorIds []int64
@@ -55,18 +48,21 @@ func Search(keyword string, db *gorm.DB) ([]models.Course, error){
 	}
 
 	for i,course := range(courses) {
-		StartTime_Hourly, err := time.Parse(time.RFC3339, course.StartTime)
+		StartTime, err := time.Parse(time.RFC3339, course.StartTime)
 		if err != nil {
 			fmt.Println("Error parsing start time:", err)
 		}
 
-		EndTime_Hourly, err := time.Parse(time.RFC3339, course.EndTime)
+		EndTime, err := time.Parse(time.RFC3339, course.EndTime)
 		if err != nil {
 			fmt.Println("Error parsing end time:", err)
 		}
 		
-		courses[i].StartTime = StartTime_Hourly.Format("15:04")
-		courses[i].EndTime = EndTime_Hourly.Format("15:04")
+		day := StartTime.Weekday().String()
+
+		courses[i].StartTime = StartTime.Format("15:04")
+		courses[i].EndTime = EndTime.Format("15:04")
+		courses[i].Day = day
 	}
 
 	return courses, nil

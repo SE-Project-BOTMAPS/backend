@@ -8,17 +8,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func (db *DbController) RoomCode(c *gin.Context) {
+func (db *DbController) IsVacant(c *gin.Context) {
 	
 	room_code := c.Param("room_code")
 
 	// Call the RoomCode function with the room_code parameter
-	dayCourseMap, officeOf, err := RoomData.RoomCode(room_code, db.Database)
+	isVacant, err := RoomData.IsRoomVacant(room_code, db.Database)
 	
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(400, gin.H{
 			"message": "No such room found: " + room_code,
-			"error": err,
 		})
 		return
 	}
@@ -26,9 +25,10 @@ func (db *DbController) RoomCode(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Error fetching data.",
+			"error": err,
 		})
 		return
 	}
 
-	c.JSON(200, gin.H{"events": dayCourseMap, "officeOf": officeOf})
+	c.JSON(200, gin.H{"isVacant": isVacant})
 }
