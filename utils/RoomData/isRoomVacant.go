@@ -2,6 +2,7 @@ package fetchData
 
 import (
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -37,11 +38,16 @@ func IsRoomVacant(room_code string, db *gorm.DB) (bool, error) {
 }
 
 func hasCurrentReservation(room_code string, reservations []Reservation) (bool,error) {
-	currentTime , _ := time.Parse(time.RFC3339, "2024-02-24T08:30:00+07:00")
+	currentTime := time.Now()
 
 	for _, reservation := range reservations {
 
-		if(room_code != reservation.Location) {
+		location := reservation.Location
+
+		strCompoundLocation := strings.ReplaceAll(location,"-","/")
+		compoundLocation := strings.Split(strCompoundLocation,"/")
+
+		if(room_code != location && !slices.Contains(compoundLocation,room_code)) {
 			continue
 		}
 
@@ -53,7 +59,7 @@ func hasCurrentReservation(room_code string, reservations []Reservation) (bool,e
 		if err != nil {
 			return true, err
 		}
-		if start.Before(currentTime) && end.After(currentTime) && reservation.Location == room_code {
+		if start.Before(currentTime) && end.After(currentTime) {
 			return false, nil
 		}
 	}
