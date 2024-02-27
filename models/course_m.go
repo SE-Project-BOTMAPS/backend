@@ -4,7 +4,7 @@ type Course struct {
 	ID          int64     `json:"id" orm:"auto" gorm:"primary_key"`
 	DataId      string    `json:"data_id" orm:"size(128)"`
 	Title       string    `json:"title" orm:"size(128)"`
-	Code        string    `json:"code" orm:"size(64)"`
+	CourseID    int       `json:"course_id"`
 	Day         string    `json:"day" orm:"size(64)"`
 	StartTime   string    `json:"start_time" orm:"size(64)"`
 	EndTime     string    `json:"end_time" orm:"size(64)"`
