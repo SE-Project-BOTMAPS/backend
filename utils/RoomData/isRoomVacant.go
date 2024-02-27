@@ -10,39 +10,31 @@ import (
 	"gorm.io/gorm"
 )
 
-type Reservations struct {
-	Reservation []Reservation `json:"events"`
-}
+type Events = fetchData.Events
+type Event = fetchData.Event
 
-type Reservation struct {
-	Id       string `json:"id"`
-	Location string `json:"location"`
-	StartDt  string `json:"start_dt"`
-	EndDt    string `json:"end_dt"`
-}
-
-func IsRoomVacant(room_code string, db *gorm.DB) (bool, error) {
+func IsRoomVacant(room_code string, db *gorm.DB) (bool, Event, error) {
 	room_code = strings.TrimSpace(room_code)
 
-	var reservations Reservations
+	var events Events
 	baseUrl := os.Getenv("BASE_URL") + "events"
-	fetchData.FetchImprove(baseUrl, &reservations)
+	fetchData.FetchImprove(baseUrl, &events)
 
-	isVacant, err := hasCurrentReservation(room_code, reservations.Reservation)
+	isVacant, event, err := hasCurrentReservation(room_code, events.Event, db)
     
 	if err != nil {
-        return true, err
+        return true, Event{}, err
     }
 
-	return isVacant, nil
+	return isVacant, event, nil
 }
 
-func hasCurrentReservation(room_code string, reservations []Reservation) (bool,error) {
+func hasCurrentReservation(room_code string, events []Event, db *gorm.DB) (bool,Event,error) {
 	currentTime := time.Now()
 
-	for _, reservation := range reservations {
+	for _, event := range events {
 
-		location := reservation.Location
+		location := event.Location
 
 		strCompoundLocation := strings.ReplaceAll(location,"-","/")
 		compoundLocation := strings.Split(strCompoundLocation,"/")
@@ -51,18 +43,18 @@ func hasCurrentReservation(room_code string, reservations []Reservation) (bool,e
 			continue
 		}
 
-		start, err := time.Parse(time.RFC3339, reservation.StartDt)
+		start, err := time.Parse(time.RFC3339, event.StartDt)
 		if err != nil {
-			return true, err
+			return true, Event{}, err
 		}
-		end, err := time.Parse(time.RFC3339, reservation.EndDt)
+		end, err := time.Parse(time.RFC3339, event.EndDt)
 		if err != nil {
-			return true, err
+			return true, Event{},err
 		}
 		if start.Before(currentTime) && end.After(currentTime) {
-			return false, nil
+			return false, event, nil
 		}
 	}
 
-	return true, nil
+	return true, Event{}, nil
 }

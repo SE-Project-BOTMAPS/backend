@@ -13,7 +13,7 @@ func (db *DbController) IsVacant(c *gin.Context) {
 	room_code := c.Param("room_code")
 
 	// Call the RoomCode function with the room_code parameter
-	isVacant, err := RoomData.IsRoomVacant(room_code, db.Database)
+	isVacant, event, err := RoomData.IsRoomVacant(room_code, db.Database)
 	
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(400, gin.H{
@@ -30,5 +30,5 @@ func (db *DbController) IsVacant(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"isVacant": isVacant})
+	c.JSON(200, gin.H{"isVacant": isVacant, "occupyingEvent": event})
 }
