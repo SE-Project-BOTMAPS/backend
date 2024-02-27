@@ -63,7 +63,8 @@ func Migration(db *gorm.DB) {
 	errLocation := db.AutoMigrate(&models.Location{})
 	errProfessor := db.AutoMigrate(&models.Professor{})
 	errConfig := db.AutoMigrate(&models.Config{})
-	if errCourse != nil || errLocation != nil || errProfessor != nil || errConfig != nil {
+	errCourseTitle := db.AutoMigrate(&models.CourseTitle{})
+	if errCourse != nil || errLocation != nil || errProfessor != nil || errConfig != nil || errCourseTitle != nil {
 		log.Fatalf("Error migrating database: %s", errCourse.Error())
 	}
 }
