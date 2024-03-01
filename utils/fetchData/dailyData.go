@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -28,17 +29,28 @@ func convertToDailyEvent(event Event, roomCode string) Event {
 	timePortionStart := StartTime.Format("15:04")
 	timePortionEnd := EndTime.Format("15:04")
 
+	title := extractNumber(event.Title)
+
 	return Event{
 		Id:       event.Id,
 		SubID:    event.SubID,
 		Rrule:    DatePortion,
-		Title:    event.Title,
+		Title:    title,
 		Who:      event.Who,
 		Location: roomCode,
 		Notes:    event.Notes,
 		StartDt:  timePortionStart,
 		EndDt:    timePortionEnd,
 	}
+}
+
+func extractNumber(pattern string) string {
+	re := regexp.MustCompile(`(\d+)-`)
+	matches := re.FindStringSubmatch(pattern)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return pattern
 }
 
 func splitLocation(eventLocation string) []string {
