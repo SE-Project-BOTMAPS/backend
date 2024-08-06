@@ -21,7 +21,7 @@ func main() {
 
 	router := gin.New()
 	router.Use(cors.Default())
-	// api := router.Group("/api")
+	api := router.Group("/")
 	routers.MainRouter(api, db)
 	err := router.Run(":8080")
 	if err != nil {
