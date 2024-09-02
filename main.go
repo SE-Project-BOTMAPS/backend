@@ -23,7 +23,7 @@ func main() {
 	router.Use(cors.Default())
 	api := router.Group("/")
 	routers.MainRouter(api, db)
-	err := router.Run(":8080")
+	err := router.Run(":8888")
 	if err != nil {
 		return
 	}
